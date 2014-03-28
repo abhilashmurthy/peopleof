@@ -8,7 +8,6 @@ insecure
 preserve-inputs
 jquery
 bootboxjs
-iron-router
 moment
 pnotify
 accounts-facebook

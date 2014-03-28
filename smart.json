@@ -3,7 +3,7 @@
     "bootboxjs": {},
     "font-awesome": {},
     "pnotify": {},
-    "iron-router": {},
-    "moment": {}
+    "moment": {},
+    "iron-router": {}
   }
 }
