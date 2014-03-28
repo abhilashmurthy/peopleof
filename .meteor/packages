@@ -7,10 +7,13 @@ standard-app-packages
 insecure
 preserve-inputs
 jquery
-bootboxjs
-moment
-pnotify
 accounts-facebook
 accounts-ui
 service-configuration
+underscore
+bootboxjs
 bootstrap-3
+font-awesome
+moment
+pnotify
+iron-router

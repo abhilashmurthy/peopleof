@@ -6,6 +6,10 @@
 	padding: 0 20px 0 20px;
 }
 
+.navvertalign {
+	line-height: 40px !important;
+}
+
 .container {
 	max-width: 1080px;
 }
