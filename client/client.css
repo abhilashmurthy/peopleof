@@ -1,0 +1,129 @@
+.container, h1 {
+	padding: 0 30px 0 30px;
+}
+
+.navcontainer {
+	padding: 0 20px 0 20px;
+}
+
+.container {
+	max-width: 1080px;
+}
+
+#prinseplogo {
+	max-height: 300px;
+}
+
+#logintext {
+	margin-bottom: 7px;
+	font-size: 18px;
+	color: darkblue;
+}
+
+#fbconnectlogo {
+	max-height: 40px;
+	box-shadow: 5px 5px 5px #dddddd;
+	border-radius: 10;
+}
+
+.navbar-nav li:not(.brand) {
+	margin: 5px 0;
+}
+
+.navpic {
+	max-height: 30px;
+}
+
+#searchItems {
+	margin-top: 20px;
+}
+
+.abhitable {
+	margin-top: 20px;
+	vertical-align: middle;
+}
+
+.abhitable td {
+	vertical-align: middle;
+}
+
+.dataTable tr, .dataTable td {
+	background-color: white !important;
+}
+
+.abhitable:not(#storyTable) td:not(.status), .abhitable:not(#storyTable) th:not(.status) {
+	text-align: center;
+}
+
+.highlight {
+	font-size: 18px;
+	font-weight: bold;
+}
+
+.abhimedia, .abhimedia-body {
+	display: inline;
+	overflow: visible;
+}
+
+.abhirow {
+	margin-left: 0 !important;
+}
+
+.itempic {
+	max-width: 150px;
+	max-height: 150px;
+}
+
+.btn-xlarge {
+    padding: 18px 28px;
+    font-size: 22px; /* change this to your desired size */
+    line-height: normal;
+    -webkit-border-radius: 8px;
+       -moz-border-radius: 8px;
+            border-radius: 8px;
+}
+
+.header {
+	text-align: center;
+}
+
+.formtable td {
+	padding-right: 10px;
+}
+
+.formtable td:first-child {
+	padding-bottom: 10px;
+}
+
+.buttonRow {
+	margin-top: 15px;
+}
+
+.borrowBtn {
+	margin-bottom: 20px;
+}
+
+.request, .borrower {
+	margin-bottom: 15px;
+}
+
+.actionBtn {
+	margin: 5px 5px 5px 0;
+}
+
+.itemModal {
+	max-width: 380px;
+}
+
+.navLink {
+	color: white !important;
+	font-size: 18px;
+}
+
+.navLink:hover {
+	color: gray !important;
+}
+
+.maprow {
+	margin-bottom : 20px;
+}

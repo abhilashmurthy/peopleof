@@ -1,0 +1,9 @@
+{
+  "packages": {
+    "bootboxjs": {},
+    "font-awesome": {},
+    "pnotify": {},
+    "iron-router": {},
+    "moment": {}
+  }
+}

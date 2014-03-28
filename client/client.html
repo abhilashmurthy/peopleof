@@ -1,0 +1,145 @@
+<head>
+	<title>People Of</title>
+	<link rel="icon" sizes="16x16 32x32" href="/favicon.ico?v=2">
+</head>
+
+<template name="layout">
+	{{> navbar}}
+	<h1 class="header">People Of</h1>
+	{{#if currentUser}} <!-- Checks if the user has logged in -->
+		<div class="container">
+			{{yield}}
+		</div>
+	{{else}}
+		{{> user_loggedout}}
+	{{/if}}
+</template>
+
+<template name="navbar">
+
+<nav class="navbar navbar-default" role="navigation">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand">Brand</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a>Link</a></li>
+        <li><a>Link</a></li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a>Action</a></li>
+            <li><a>Another action</a></li>
+            <li><a>Something else here</a></li>
+            <li class="divider"></li>
+            <li><a>Separated link</a></li>
+            <li class="divider"></li>
+            <li><a>One more separated link</a></li>
+          </ul>
+        </li>
+      </ul>
+      <form class="navbar-form navbar-left" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search">
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+      </form>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a>Link</a></li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a>Action</a></li>
+            <li><a>Another action</a></li>
+            <li><a>Something else here</a></li>
+            <li class="divider"></li>
+            <li><a>Separated link</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+	<nav class="navbar navbar-inverse" role="navigation">
+	  <div class="container-fluid">
+	    <!-- Brand and toggle get grouped for better mobile display -->
+	    <div class="navbar-header">
+	      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#peopleofnav">
+	        <span class="sr-only">Toggle navigation</span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	      </button>
+	      <a class="navbar-brand">People Of</a>
+	    </div>
+
+	    <!-- Collect the nav links, forms, and other content for toggling -->
+	    <div class="collapse navbar-collapse" id="peopleofnav">
+		{{#if currentUser}}
+			<ul class="navbar-nav nav">
+				<!-- Add Nav Links Here -->
+				<!-- <li><a class="navLink" href="/logs">Logs</a></li> -->
+			</ul>
+			{{> user_loggedin}}
+		{{/if}}
+	      <ul class="nav navbar-nav">
+	      </ul>
+	    </div><!-- /.navbar-collapse -->
+	  </div><!-- /.container-fluid -->
+	</nav>
+</template>
+
+<template name="user_loggedin">
+    <li class="dropdown">
+      <a class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+      <ul class="dropdown-menu">
+        <li><a>Action</a></li>
+        <li><a>Another action</a></li>
+        <li><a>Something else here</a></li>
+        <li class="divider"></li>
+        <li><a>Separated link</a></li>
+        <li class="divider"></li>
+        <li><a>One more separated link</a></li>
+      </ul>
+    </li>
+	<ul class="navbar-nav nav pull-right">
+		<li class="brand"><img class="navpic img-rounded" src="http://graph.facebook.com/{{currentUser.services.facebook.id}}/picture"/></li>
+		<li class="dropdown">
+			<a class="navLink dropdown-toggle" data-toggle="dropdown">
+				{{currentUser.services.facebook.name}}
+				<b class="caret"></b>
+			</a>
+			<ul class="dropdown-menu">
+				<li><a id="logout">Logout</a></li>
+			</ul>
+		</li>
+	</ul>
+</template>
+
+<template name="user_loggedout">
+	<div class="header">
+		{{#if loggingIn}}
+			<div id="logintext">Logging in...</div>
+			<h2 class="login header"><i class="fa fa-cog fa-spin"></i></h2>
+		{{else}}
+			<div id="logintext">Login with Facebook</div>
+			<div><a id="login"><img id="fbconnectlogo" src="/fb-connect.png"/></a></div>
+			<div><h2 class="login2 header" hidden><i class="fa fa-cog fa-spin"></i></h2></div>
+		{{/if}}
+	</div>
+</template>
+
+<template name="page">
+	<h1>Welcome {{currentUser.services.facebook.name}}</h1>
+</template>
