@@ -8,6 +8,9 @@ ServiceConfiguration.configurations.insert({
 	secret: Meteor.settings.fb.secret
 });
 
-Accounts.onCreateUser(function(options, user){
+Accounts.onCreateUser(function(options, user) {
+	Meteor.call('createMember', user.services.facebook, function(err, data) {
+		if (err) console.log(err);
+	})
 	return user;
 });

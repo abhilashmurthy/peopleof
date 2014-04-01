@@ -8,7 +8,7 @@
 	{{> place}}
 	{{#if currentUser}} <!-- Checks if the user has logged in -->
 		<div class="container">
-			{{yield}}
+			{{> yield}}
 		</div>
 	{{else}}
 		{{> user_loggedout}}
@@ -16,7 +16,7 @@
 </template>
 
 <template name="place">
-	<h1 class="header">People of <a href="http://www.facebook.com/{{place.facebookId}}/">{{place.name}}</a></h1>
+	<h1 class="header" style="margin-bottom: 30px;">People of <a href="http://www.facebook.com/{{place.facebookId}}/">{{place.name}}</a></h1>
 </template>
 
 <template name="navbar">
@@ -72,7 +72,6 @@
 </template>
 
 <template name="page">
-	<h1>Welcome {{currentUser.services.facebook.name}}</h1>
 	<div class="row">
 		<div class="col-md-8">
 			{{> map}}
@@ -87,19 +86,18 @@
 	<div id="mapPanel" class="panel panel-default">
 	  <div class="panel-body">
 		  <div class="map">
-		    {{#constant}}
-		      <svg id="profilePics" width="100" height="100">
-		      	<defs id="picDefs"></defs>
-		      </svg>
-		      <svg id="memberCircles" width="1024" height="768">
-		        <circle class="callout" cx=-100 cy=-100></circle>
-		        <g class="circles"></g>
-		        <g class="labels"></g>
-		      </svg>
-		    {{/constant}}
+			<svg id="members" width="500" height="500">
+				{{#each members}}
+					{{> member}}
+				{{/each}}
+			</svg>
 		  </div>
 	  </div>
   </div>
+</template>
+
+<template name="member">
+	{{circle}}
 </template>
 
 <template name="details">
@@ -108,11 +106,11 @@
 	  {{#if selected}}
 		<div class="media">
 			<a class="pull-left" href="#">
-				<img class="media-object" src="http://graph.facebook.com/{{selected.services.facebook.id}}/picture?type=large" alt="128x128" style="width: 128px; height: 128px;">
+				<img class="media-object" src="http://graph.facebook.com/{{selected.id}}/picture?type=large" alt="128x128" style="width: 128px; height: 128px;">
 			</a>
 			<div class="media-body">
-				<h4 class="media-heading">{{selected.services.facebook.name}}</h4>
-				{{selected.services.facebook.name}}
+				<h4 class="media-heading">{{selected.name}}</h4>
+				{{selected.name}}
 			</div>
 		</div>
 	  {{else}}
