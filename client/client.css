@@ -131,3 +131,36 @@
 .maprow {
 	margin-bottom : 20px;
 }
+
+.map {
+    position: relative;
+    background-position: -20px -20px;
+    width: 1024px;
+    height: 768px;
+}
+
+.map circle {
+    fill: #49AFCD;
+}
+
+.map text {
+    text-anchor: middle;
+    fill: white;
+    font-weight: bold;
+}
+
+.map circle.callout {
+    stroke-width: 5px;
+    stroke-dasharray: 9, 5;
+    stroke-opacity: .8;
+    fill: none;
+    stroke: red;
+}
+
+.attribution {
+    position: absolute;
+    bottom: 0;
+    background-color: white;
+    padding: 3px;
+    padding-bottom: 0;
+}
