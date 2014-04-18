@@ -8,6 +8,11 @@ Meteor.publish("userData", function() {
 	return Meteor.users.find();
 })
 
+//Publish all links
+Meteor.publish("linkData", function(){
+	return Links.find();
+})
+
 //Public all places
 Meteor.publish("placeData", function() {
 	return Places.find();

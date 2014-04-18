@@ -85,19 +85,10 @@
 <template name="map">
 	<div id="mapPanel" class="panel panel-default">
 	  <div class="panel-body">
-		  <div class="map">
-			<svg id="members" width="500" height="500">
-				{{#each members}}
-					{{> member}}
-				{{/each}}
-			</svg>
+		  <div id="map">
 		  </div>
 	  </div>
   </div>
-</template>
-
-<template name="member">
-	{{circle}}
 </template>
 
 <template name="details">
