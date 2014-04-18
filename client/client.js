@@ -1,5 +1,4 @@
 Meteor.subscribe("memberData");
-Meteor.subscribe("linkData");
 Meteor.subscribe("userData");
 Meteor.subscribe("placeData");
 
@@ -43,7 +42,7 @@ Template.place.place = function() {
 // Map display
 
 Template.map.events({
-	'mousedown circle, mousedown text': function(event, template) {
+	'click circle': function(event, template) {
 		Session.set("selected", $(event.currentTarget).closest('g').attr('id'));
 	},
 });
@@ -51,7 +50,7 @@ Template.map.events({
 
 Template.map.rendered = function() {
 	var width = $('#mapPanel').width();
-	var height = 1000;
+	var height = 300;
 	var radius = 30;
 
 	var svg = d3.select('#map').append("svg")
@@ -59,20 +58,17 @@ Template.map.rendered = function() {
 		.attr('height', height);
 
 	var members = Members.find().fetch();
-	var tempLinks = Links.find().fetch();
 
 	var links = [];
-	for (var i = tempLinks.length - 1; i >= 0; i--) {
-		var sourceNode = members.filter(function(n) {
-			return n.id == tempLinks[i].source;
-		})[0];
-		var targetNode = members.filter(function(n) {
-			return n.id == tempLinks[i].target;
-		})[0];
-		links.push({
-			source: sourceNode,
-			target: targetNode
-		});
+	for (var i = members.length - 1; i >= 0; i--) {
+		var sourceNode = members[i];
+		for (var j = sourceNode.friends.length - 1; j >= 0; j--) {
+			var targetNode = members.filter(function (n) { return n.id == sourceNode.friends[j]; })[0];
+			links.push({
+				source: sourceNode,
+				target: targetNode
+			});
+		};
 	};
 
 	console.log('members:');
@@ -231,7 +227,7 @@ Template.map.rendered = function() {
 //////////////////////////////////////////////////////////////////////////////////////////////// DETAILS
 Template.details.selected = function() {
 	var member_id = Session.get('selected');
-	if (member_id) return Members.findOne(member_id);
+	if (member_id) return Members.findOne({id: member_id});
 }
 
 Template.details.events({

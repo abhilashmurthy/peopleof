@@ -1,5 +1,4 @@
 Members = new Meteor.Collection("members");
-Links = new Meteor.Collection("links");
 Places = new Meteor.Collection("places");
 
 var NonEmptyString = Match.Where(function(x) {
@@ -14,20 +13,15 @@ var ConvertedNumber = Match.Where(function(x) {
 
 Meteor.methods({
 	createMember: function(fbData, friendId) {
+		var existingMember = Members.find({id: fbData.id}).fetch();
+		if (existingMember.length) return false;
+		var friends = new Array();
+		if (friendId) friends.push(friendId);
 		Members.insert({
 			id: fbData.id,
 			name: fbData.name,
-			username: fbData.username
-		});
-		if (friendId) Links.insert({
-			source: friendId,
-			target: fbData.id
-		});
-	},
-	createLink: function(source, target) {
-		Links.insert({
-			source: source,
-			target: target
+			username: fbData.username,
+			friends: friends
 		});
 	},
 	testNetwork: function(placeId) {
@@ -42,7 +36,7 @@ Meteor.methods({
 		var friendsInPlace = friendResult.data ? friendResult.data.data : null;
 		console.log(friendsInPlace.length);
 		if (!friendsInPlace) return false;
-		for (var i = 0; i < 50; i++) {
+		for (var i = 0; i < 10; i++) {
 			Meteor.call('createMember', {
 				id: friendsInPlace[i].uid,
 				name: friendsInPlace[i].name,
