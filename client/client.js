@@ -57,100 +57,100 @@ Template.map.rendered = function() {
 		.attr('width', width)
 		.attr('height', height);
 
-	var members = Members.find().fetch();
-
-	var links = [];
-	for (var i = members.length - 1; i >= 0; i--) {
-		var sourceNode = members[i];
-		for (var j = sourceNode.friends.length - 1; j >= 0; j--) {
-			var targetNode = members.filter(function (n) { return n.id == sourceNode.friends[j]; })[0];
-			links.push({
-				source: sourceNode,
-				target: targetNode
-			});
+	Meteor.call('getMembers', function (err, members){
+		var links = [];
+		for (var i = members.length - 1; i >= 0; i--) {
+			var sourceNode = members[i];
+			for (var j = sourceNode.friends.length - 1; j >= 0; j--) {
+				var targetNode = members.filter(function (n) { return n.id == sourceNode.friends[j]; })[0];
+				links.push({
+					source: sourceNode,
+					target: targetNode
+				});
+			};
 		};
-	};
 
-	console.log('members:');
-	console.log(members);
-	console.log('links:');
-	console.log(links);
+		console.log('members:');
+		console.log(members);
+		console.log('links:');
+		console.log(links);
 
-	var force = d3.layout.force()
-		.nodes(members)
-		.links(links)
-		.size([width, height])
-		.linkDistance(120)
-		.charge(-120)
-		.on("tick", tick)
-		.start();
+		var force = d3.layout.force()
+			.nodes(members)
+			.links(links)
+			.size([width, height])
+			.linkDistance(120)
+			.charge(-120)
+			.on("tick", tick)
+			.start();
 
-	var link = svg.selectAll(".link")
-		.data(force.links())
-		.enter().append("line")
-		.attr("class", "link")
-		.style("stroke-width", 3);
+		var link = svg.selectAll(".link")
+			.data(force.links())
+			.enter().append("line")
+			.attr("class", "link")
+			.style("stroke-width", 3);
 
-	var node = svg.selectAll(".node")
-		.data(force.nodes())
-		.enter()
-		.append("g")
-		.attr("class", "node")
-		.attr("id", function(member) {
-			return member.id;
-		})
-		.call(force.drag);
-
-	node.append("defs")
-		.append("pattern")
-		.attr("id", function(member) {
-			return "i_" + member.id;
-		})
-		.attr('patternUnits', 'userSpaceOnUse')
-		.attr("x", radius)
-		.attr("y", radius)
-		.attr("height", radius * 2)
-		.attr("width", radius * 2)
-		.append("image")
-		.attr("x", 0)
-		.attr("y", 0)
-		.attr("height", radius * 2)
-		.attr("width", radius * 2)
-		.attr('xlink:href', function(member) {
-			return "http://graph.facebook.com/" + member.id + "/picture" + "?type=square" + "&height=" + (radius * 2) + "&width=" + (radius * 2);
-		});
-
-	node.append("circle")
-		.style("stroke", "gray")
-		.style("fill", function(member) {
-			return "url(#i_" + member.id + ")";
-		})
-		.attr("r", radius);
-
-	node.append("title")
-		.text(function(member) {
-			return member.name;
-		});
-
-	function tick() {
-		link
-			.attr("x1", function(d) {
-				return d.source.x;
+		var node = svg.selectAll(".node")
+			.data(force.nodes())
+			.enter()
+			.append("g")
+			.attr("class", "node")
+			.attr("id", function(member) {
+				return member.id;
 			})
-			.attr("y1", function(d) {
-				return d.source.y;
+			.call(force.drag);
+
+		node.append("defs")
+			.append("pattern")
+			.attr("id", function(member) {
+				return "i_" + member.id;
 			})
-			.attr("x2", function(d) {
-				return d.target.x;
-			})
-			.attr("y2", function(d) {
-				return d.target.y;
+			.attr('patternUnits', 'userSpaceOnUse')
+			.attr("x", radius)
+			.attr("y", radius)
+			.attr("height", radius * 2)
+			.attr("width", radius * 2)
+			.append("image")
+			.attr("x", 0)
+			.attr("y", 0)
+			.attr("height", radius * 2)
+			.attr("width", radius * 2)
+			.attr('xlink:href', function(member) {
+				return "http://graph.facebook.com/" + member.id + "/picture" + "?type=square" + "&height=" + (radius * 2) + "&width=" + (radius * 2);
 			});
 
-		node.attr("transform", function(d) {
-			return "translate(" + d.x + "," + d.y + ")";
-		});
-	}
+		node.append("circle")
+			.style("stroke", "gray")
+			.style("fill", function(member) {
+				return "url(#i_" + member.id + ")";
+			})
+			.attr("r", radius);
+
+		node.append("title")
+			.text(function(member) {
+				return member.name;
+			});
+
+		function tick() {
+			link
+				.attr("x1", function(d) {
+					return d.source.x;
+				})
+				.attr("y1", function(d) {
+					return d.source.y;
+				})
+				.attr("x2", function(d) {
+					return d.target.x;
+				})
+				.attr("y2", function(d) {
+					return d.target.y;
+				});
+
+			node.attr("transform", function(d) {
+				return "translate(" + d.x + "," + d.y + ")";
+			});
+		}
+	});
 };
 
 // Template.map.members = function() {

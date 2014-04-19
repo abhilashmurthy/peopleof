@@ -24,6 +24,9 @@ Meteor.methods({
 			friends: friends
 		});
 	},
+	getMembers: function() {
+		return Members.find().fetch();
+	},
 	testNetwork: function(placeId) {
 		var fbId = Meteor.user().services.facebook.id;
 		var fbAccessToken = Meteor.user().services.facebook.accessToken;
