@@ -58,6 +58,10 @@ Template.map.rendered = function() {
 		.attr('height', height);
 
 	Meteor.call('getMembers', function (err, members){
+
+		if (err) console.log(err);
+
+		//generate links from nodes
 		var links = [];
 		for (var i = members.length - 1; i >= 0; i--) {
 			var sourceNode = members[i];
@@ -69,11 +73,6 @@ Template.map.rendered = function() {
 				});
 			};
 		};
-
-		console.log('members:');
-		console.log(members);
-		console.log('links:');
-		console.log(links);
 
 		var force = d3.layout.force()
 			.nodes(members)
@@ -146,10 +145,41 @@ Template.map.rendered = function() {
 					return d.target.y;
 				});
 
-			node.attr("transform", function(d) {
-				return "translate(" + d.x + "," + d.y + ")";
-			});
+			node
+				.each(collide(0.5))
+				.attr("transform", function(d) {
+					return "translate(" + d.x + "," + d.y + ")";
+				});
 		}
+
+		// Resolves collisions between d and all other circles.
+		function collide(alpha) {
+		  var quadtree = d3.geom.quadtree(force.nodes());
+		  return function(d) {
+		    var r = 30 + 10,
+		        nx1 = d.x - r,
+		        nx2 = d.x + r,
+		        ny1 = d.y - r,
+		        ny2 = d.y + r;
+		    quadtree.visit(function(quad, x1, y1, x2, y2) {
+		      if (quad.point && (quad.point !== d)) {
+		        var x = d.x - quad.point.x,
+		            y = d.y - quad.point.y,
+		            l = Math.sqrt(x * x + y * y),
+		            r = 30 + 30;
+		        if (l < r) {
+		          l = (l - r) / l * alpha;
+		          d.x -= x *= l;
+		          d.y -= y *= l;
+		          quad.point.x += x;
+		          quad.point.y += y;
+		        }
+		      }
+		      return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+		    });
+		  };
+		}
+
 	});
 };
 
