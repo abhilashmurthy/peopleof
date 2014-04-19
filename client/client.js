@@ -2,6 +2,10 @@ Meteor.subscribe("memberData");
 Meteor.subscribe("userData");
 Meteor.subscribe("placeData");
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////// GLOBALS
+var height = 1000;
+var radius = 30;
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////// DEFAULTS
 Template.navbar.events = {
 	'click .login-display-name': function(e) {
@@ -49,9 +53,15 @@ Template.map.events({
 
 
 Template.map.rendered = function() {
+	drawMap();
+};
+
+function clearMap() {
+	d3.select("svg").remove();
+}
+
+function drawMap() {
 	var width = $('#mapPanel').width();
-	var height = 300;
-	var radius = 30;
 
 	var svg = d3.select('#map').append("svg")
 		.attr('width', width)
@@ -146,7 +156,7 @@ Template.map.rendered = function() {
 				});
 
 			node
-				.each(collide(0.5))
+				// .each(collide(0.1))
 				.attr("transform", function(d) {
 					return "translate(" + d.x + "," + d.y + ")";
 				});
@@ -156,7 +166,7 @@ Template.map.rendered = function() {
 		function collide(alpha) {
 		  var quadtree = d3.geom.quadtree(force.nodes());
 		  return function(d) {
-		    var r = 30 + 10,
+		    var r = radius * 2,
 		        nx1 = d.x - r,
 		        nx2 = d.x + r,
 		        ny1 = d.y - r,
@@ -166,7 +176,7 @@ Template.map.rendered = function() {
 		        var x = d.x - quad.point.x,
 		            y = d.y - quad.point.y,
 		            l = Math.sqrt(x * x + y * y),
-		            r = 30 + 30;
+		            r = radius * 3;
 		        if (l < r) {
 		          l = (l - r) / l * alpha;
 		          d.x -= x *= l;
@@ -181,78 +191,7 @@ Template.map.rendered = function() {
 		}
 
 	});
-};
-
-// Template.map.members = function() {
-//   return Members.find();
-// }
-
-// Template.member.circle = function() {
-//   var member = this; //cache this shit
-//   var radius = 60;
-//   var selectorId = "#" + member._id;
-
-//   existing_circles = d3.select("#members").selectAll("g");
-//   console.log("current # of things = " + existing_circles.size());
-
-//   x_increment = (500 - 50) / ((existing_circles.size() ? existing_circles.size() : 1) + 2);
-//   x_next = x_increment + 50;
-
-//   Template.member._draw_existing(existing_circles, x_next, x_increment);
-
-//   x_next = x_next + (x_increment * existing_circles.size());
-
-//   setTimeout(function() {
-//     circle = d3.select("#members").selectAll(selectorId);
-//     circle_data = circle.data([member._id]);
-//     g_container = circle_data.enter()
-//       .append("g")
-//       .classed("member", true)
-//       .attr("id", function(d) {
-//         return d;
-//       })
-//       .attr("transform", function(d) {
-//         i = x_next;
-//         x_next = x_next + x_increment;
-//         return "translate(" + i + ",100)"
-//       });
-
-//     g_container.append("defs")
-//       .append("pattern")
-//       .attr("id", "i_" + member.id)
-//       .attr('patternUnits', 'userSpaceOnUse')
-//       .attr("x", radius)
-//       .attr("y", radius)
-//       .attr("height", 120)
-//       .attr("width", 120)
-//       .append("image")
-//       .attr("x", 0)
-//       .attr("y", 0)
-//       .attr("height", 120)
-//       .attr("width", 120)
-//       .attr('xlink:href', "http://graph.facebook.com/" + member.id + "/picture?type=square&height=120&width=120");
-
-//     g_container.append("circle")
-//       .style("stroke", "gray")
-//       .style("fill", "url(#i_" + member.id + ")")
-//       .attr("r", radius);
-
-//     g_container.append("text")
-//       .text(member.name);
-//   }, 0);
-// }
-
-// Template.member._draw_existing = function(existing_circles, x_next, x_increment) {
-//   existing_circles
-//     .transition()
-//     .duration(750)
-//     .style("stroke", "gray")
-//     .attr("transform", function(d) {
-//       i = x_next;
-//       x_next = x_next + x_increment;
-//       return "translate(" + i + ",100)"
-//     });
-// }
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////// DETAILS
 Template.details.selected = function() {
@@ -263,12 +202,27 @@ Template.details.selected = function() {
 Template.details.events({
 	'click button#build': function(e) {
 		var placeId = Session.get('place');
-		Meteor.call('testNetwork', placeId, function(err, data) {
+		$('.detailsMsg').show();
+		Meteor.call('buildNetwork', placeId, function(err, success) {
 			if (err) console.log(err);
+			if (success) {
+				$('.detailsMsg').hide();
+				clearMap();
+				drawMap();
+			}
 		})
 	},
 	'click button#clear': function(e) {
-
+		var placeId = Session.get('place');
+		$('.detailsMsg').show();
+		Meteor.call('resetNetwork', placeId, function(err, success) {
+			if (err) console.log(err);
+			if (success) {
+				$('.detailsMsg').hide();
+				clearMap();
+				drawMap();
+			}
+		})
 	}
 });
 
