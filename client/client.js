@@ -17,7 +17,7 @@ Template.user_loggedout.events({
 	'click #login': function(e) {
 		$('.login2').show();
 		Meteor.loginWithFacebook({
-			requestPermissions: ['user_education_history', 'friends_education_history', 'user_work_history', 'friends_work_history']
+			requestPermissions: Meteor.settings.public.fb.permissions
 		}, function(err) {
 			if (err) console.log(err);
 			else console.log('Logged in!');
@@ -77,10 +77,12 @@ function drawMap() {
 			var sourceNode = members[i];
 			for (var j = sourceNode.friends.length - 1; j >= 0; j--) {
 				var targetNode = members.filter(function (n) { return n.id == sourceNode.friends[j]; })[0];
-				links.push({
-					source: sourceNode,
-					target: targetNode
-				});
+				if (targetNode) {
+					links.push({
+						source: sourceNode,
+						target: targetNode
+					});
+				}
 			};
 		};
 
@@ -216,6 +218,18 @@ Template.details.events({
 		var placeId = Session.get('place');
 		$('.detailsMsg').show();
 		Meteor.call('resetNetwork', placeId, function(err, success) {
+			if (err) console.log(err);
+			if (success) {
+				$('.detailsMsg').hide();
+				clearMap();
+				drawMap();
+			}
+		})
+	},
+	'click button#grow': function(e) {
+		var placeId = Session.get('place');
+		$('.detailsMsg').show();
+		Meteor.call('growNetwork', placeId, function(err, success) {
 			if (err) console.log(err);
 			if (success) {
 				$('.detailsMsg').hide();
