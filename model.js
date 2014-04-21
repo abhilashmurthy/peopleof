@@ -27,7 +27,7 @@ Meteor.methods({
 	},
 	addFriend: function(userId, friendId) {
 		Members.update({id: userId}, {
-			$push: {friends: friendId}
+			$addToSet: {friends: friendId}
 		});
 	},
 	getMembers: function() {

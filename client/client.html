@@ -100,8 +100,8 @@
 				<img class="media-object" src="http://graph.facebook.com/{{selected.id}}/picture?type=large" alt="128x128" style="width: 128px; height: 128px;">
 			</a>
 			<div class="media-body">
-				<h4 class="media-heading">{{selected.name}}</h4>
-				{{selected.name}}
+				<h4 class="media-heading"><a target="_blank" href="http://facebook.com/{{selected.id}}">{{selected.name}}</a></h4>
+				{{selected.friends.length}} friends
 			</div>
 		</div>
 	  {{else}}

@@ -45,13 +45,6 @@ Template.place.place = function() {
 ///////////////////////////////////////////////////////////////////////////////
 // Map display
 
-Template.map.events({
-	'click circle': function(event, template) {
-		Session.set("selected", $(event.currentTarget).closest('g').attr('id'));
-	},
-});
-
-
 Template.map.rendered = function() {
 	drawMap();
 };
@@ -76,7 +69,7 @@ function drawMap() {
 		for (var i = members.length - 1; i >= 0; i--) {
 			var sourceNode = members[i];
 			for (var j = sourceNode.friends.length - 1; j >= 0; j--) {
-				var targetNode = members.filter(function (n) { return n.id == sourceNode.friends[j]; })[0];
+				var targetNode = members.filter(function (n) { return n.id === sourceNode.friends[j]; })[0];
 				if (targetNode) {
 					links.push({
 						source: sourceNode,
@@ -90,8 +83,11 @@ function drawMap() {
 			.nodes(members)
 			.links(links)
 			.size([width, height])
-			.linkDistance(120)
-			.charge(-120)
+			.linkDistance(160)
+			.charge(function (d){
+				sourceLinks = links.filter(function (n) {return n.source.id === d.id});
+				return -1 * (1 - sourceLinks.length/members.length) * 500;
+			})
 			.on("tick", tick)
 			.start();
 
@@ -99,7 +95,7 @@ function drawMap() {
 			.data(force.links())
 			.enter().append("line")
 			.attr("class", "link")
-			.style("stroke-width", 3);
+			.style("stroke-width", 2);
 
 		var node = svg.selectAll(".node")
 			.data(force.nodes())
@@ -109,7 +105,26 @@ function drawMap() {
 			.attr("id", function(member) {
 				return member.id;
 			})
-			.call(force.drag);
+			.call(force.drag)
+			.on("click", function (d) {
+				d3.event.stopPropagation();
+				Session.set('selected', d.id);
+				link
+					.style("opacity", function (o) {
+						return o.source.id === d.id || o.target.id === d.id ? 1 : 0.3;
+					})
+					.style("stroke", function (o) {
+						return o.source.id === d.id || o.target.id === d.id ? "red" : "";
+					})
+			});
+
+		svg
+			.on("click", function(){
+				Session.set('selected', null);
+				link
+					.style("opacity", 1)
+					.style("stroke", "")
+			});
 
 		node.append("defs")
 			.append("pattern")
@@ -158,7 +173,7 @@ function drawMap() {
 				});
 
 			node
-				// .each(collide(0.1))
+				.each(collide(0.15))
 				.attr("transform", function(d) {
 					return "translate(" + d.x + "," + d.y + ")";
 				});
@@ -168,7 +183,7 @@ function drawMap() {
 		function collide(alpha) {
 		  var quadtree = d3.geom.quadtree(force.nodes());
 		  return function(d) {
-		    var r = radius * 2,
+		    var r = radius * 4,
 		        nx1 = d.x - r,
 		        nx2 = d.x + r,
 		        ny1 = d.y - r,
@@ -178,7 +193,7 @@ function drawMap() {
 		        var x = d.x - quad.point.x,
 		            y = d.y - quad.point.y,
 		            l = Math.sqrt(x * x + y * y),
-		            r = radius * 3;
+		            r = radius * 4;
 		        if (l < r) {
 		          l = (l - r) / l * alpha;
 		          d.x -= x *= l;
