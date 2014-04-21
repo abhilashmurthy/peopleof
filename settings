@@ -4,6 +4,10 @@
 		"appId": "1420278898226217",
 		"secret": "2659990b92e50331a3a5217afa8f120f"
 	},
+	"fql": {
+		"friendsInPlace": "SELECT uid,name,username FROM user WHERE uid IN (SELECT uid1 FROM friend WHERE uid2=me()) AND _PLACEID IN education",
+		"mutualFriendsInPlace": "SELECT uid,name,username FROM user where uid IN (SELECT uid1 FROM friend WHERE uid2=_FRIENDID AND uid1 IN (SELECT uid2 FROM friend WHERE uid1=me())) AND _PLACEID IN education"
+	},
 	"public": {
 		"fb": {
 			"permissions": [

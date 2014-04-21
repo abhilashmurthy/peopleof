@@ -37,8 +37,8 @@ Meteor.methods({
 		if (Meteor.isServer) {
 			var fbId = Meteor.user().services.facebook.id;
 			var fbAccessToken = Meteor.user().services.facebook.accessToken;
-			var query = "SELECT uid,name,username FROM user WHERE uid IN (SELECT uid1 FROM friend WHERE uid2=me()) AND placeId IN education";
-			query = query.replace('placeId', placeId);
+			var query = Meteor.settings.fql.friendsInPlace;
+			query = query.replace('_PLACEID', placeId);
 			var friendResult = null;
 			try {
 				friendResult = HTTP.get(
@@ -78,18 +78,19 @@ Meteor.methods({
 				if (i%50 === 0 && i > 0) {
 					//Do stuff with the batch
 					var mutualFriendsOfFriends = Meteor.call('getMutualFriendsBatched', batchRequests);
-					console.log('Got mutual friends for ' + mutualFriendsOfFriends.length);
 					updateMutualFriends(mutualFriendsOfFriends);
 					batchRequests = new Array();
 				}
+				var query = Meteor.settings.fql.mutualFriendsInPlace;
+				query = query.replace('_PLACEID', placeId);
+				query = query.replace('_FRIENDID', members[i].id);
 				batchRequests.push({
 					method: "GET",
-					relative_url: members[i].id + "/mutualfriends",
+					relative_url: "/method/fql.query?query=" + query,
 					id: members[i].id
 				});
 				if (i === members.length - 1 && batchRequests.length > 0) {
 					var mutualFriendsOfFriends = Meteor.call('getMutualFriendsBatched', batchRequests);
-					console.log('Got mutual friends for ' + mutualFriendsOfFriends.length);
 					updateMutualFriends(mutualFriendsOfFriends);
 				}
 			};
@@ -98,12 +99,9 @@ Meteor.methods({
 			for (var j = mutualFriendsOfFriends.length - 1; j >= 0; j--) {
 				var friendId = mutualFriendsOfFriends[j].id;
 				var mutualFriends = mutualFriendsOfFriends[j].friends;
-				console.log(friendId);
-				console.log(mutualFriends);
-				console.log("\n");
 				for (var k = mutualFriends.length - 1; k >= 0; k--) {
 					console.log('Adding friend ' + mutualFriends[k].name + ' to ' + friendId);
-					Meteor.call('addFriend', friendId, mutualFriends[k].id);
+					Meteor.call('addFriend', friendId, mutualFriends[k].uid);
 				};
 			};
 		}
@@ -122,7 +120,7 @@ Meteor.methods({
 			var bodyContent = JSON.parse(dataChunkBody.body);
 			dataParts.push({
 				id: requestsArray[i].id,
-				friends: bodyContent.data
+				friends: bodyContent
 			});
 		};
 		return dataParts;
