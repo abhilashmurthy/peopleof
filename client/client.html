@@ -72,14 +72,8 @@
 </template>
 
 <template name="page">
-	<div class="row">
-		<div class="col-md-8">
-			{{> map}}
-		</div>
-		<div class="col-md-4">
-			{{> details}}
-		</div>
-	</div>
+	{{> map}}
+	{{> details}}
 </template>
 
 <template name="map">
@@ -109,7 +103,6 @@
 	  {{/if}}
 	  </div>
 	</div>
-	<hr/>
 	<div class="panel panel-default">
 		<div class="panel-body">
 			<button id="build" class="btn btn-primary">Build</button>

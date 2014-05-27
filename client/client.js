@@ -3,8 +3,10 @@ Meteor.subscribe("userData");
 Meteor.subscribe("placeData");
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////// GLOBALS
-var height = 1000;
-var radius = 30;
+var width = 1500;
+var height = 1500;
+var estMaxFriends = 750;
+var radius = (width * height) / (100 * estMaxFriends);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////// DEFAULTS
 Template.navbar.events = {
@@ -54,8 +56,6 @@ function clearMap() {
 }
 
 function drawMap() {
-	var width = $('#mapPanel').width();
-
 	var svg = d3.select('#map').append("svg")
 		.attr('width', width)
 		.attr('height', height);
@@ -82,12 +82,12 @@ function drawMap() {
 		var force = d3.layout.force()
 			.nodes(members)
 			.links(links)
-			.size([width, height])
-			.linkDistance(radius * 2)
+			.linkDistance(radius * 1.5)
 			// .charge(function (d){
 			// 	sourceLinks = links.filter(function (n) {return n.source.id === d.id});
 			// 	return -1 * (1 - sourceLinks.length/members.length) * 500;
 			// })
+			.size([width *= 2 / 3, height *= 2 / 3])
 			.on("tick", tick)
 			.start();
 
@@ -108,9 +108,9 @@ function drawMap() {
 	    }
 
 	    function dragmove(d, i) {
-			node.attr("transform", function (d){
-				return "translate(" + (d3.event.x - d.x) + "," + (d3.event.y - d.y) + ")";
-			})
+			node.attr("transform", function(d) {
+				"translate(" + (d3.event.x - d.x) + "," + (d3.event.y - d.y) + ")"
+			});
 	        d.px += d3.event.dx;
 	        d.py += d3.event.dy;
 	        d.x += d3.event.dx;
@@ -119,8 +119,7 @@ function drawMap() {
 	    }
 
 	    function dragend(d, i) {
-	        // tick();
-	        // force.resume();
+	    	// force.resume();
 	    }
 	    /*********************** /Drag code ******************************/
 
@@ -143,12 +142,11 @@ function drawMap() {
 						return o.source.id === d.id || o.target.id === d.id ? "red" : "";
 					})
 			})
-			.call(force.drag);
+			.call(node_drag); //Switch between node_drag and force.drag
 
 		/*********************** Force Tick code ******************************/
 		function tick() {
-			link
-				.attr("x1", function(d) {
+			link.attr("x1", function(d) {
 					return d.source.x;
 				})
 				.attr("y1", function(d) {
@@ -161,8 +159,10 @@ function drawMap() {
 					return d.target.y;
 				});
 
-			node
-				// .each(collide(0.15))
+			node.attr("cx", function(d) { return d.x = Math.max(radius * 1.1, Math.min(width - radius * 1.1, d.x)); })
+		   		.attr("cy", function(d) { return d.y = Math.max(radius * 1.1, Math.min(height - radius * 1.1, d.y)); });
+
+			node.each(collide(0.15))
 				.attr("transform", function(d) {
 					return "translate(" + d.x + "," + d.y + ")";
 				});

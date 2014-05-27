@@ -11,6 +11,8 @@ var ConvertedNumber = Match.Where(function(x) {
 	return parseInt(x) !== NaN;
 });
 
+var nodeLimit = 0;
+
 Meteor.methods({
 	createMember: function(fbData, friendId) {
 		var existingMember = Members.find({id: fbData.id}).fetch();
@@ -48,7 +50,7 @@ Meteor.methods({
 				var friendsInPlace = friendResult.data ? friendResult.data.data : null;
 				console.log(friendsInPlace.length);
 				if (!friendsInPlace) return false;
-				for (var i = 0; i < 30; i++) {
+				for (var i = 0; i < (nodeLimit ? nodeLimit : friendsInPlace.length); i++) {
 					Meteor.call('createMember', {
 						id: friendsInPlace[i].uid,
 						name: friendsInPlace[i].name,
