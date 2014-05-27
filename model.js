@@ -48,7 +48,7 @@ Meteor.methods({
 				var friendsInPlace = friendResult.data ? friendResult.data.data : null;
 				console.log(friendsInPlace.length);
 				if (!friendsInPlace) return false;
-				for (var i = 0; i < 20; i++) {
+				for (var i = 0; i < 30; i++) {
 					Meteor.call('createMember', {
 						id: friendsInPlace[i].uid,
 						name: friendsInPlace[i].name,
@@ -100,7 +100,6 @@ Meteor.methods({
 				var friendId = mutualFriendsOfFriends[j].id;
 				var mutualFriends = mutualFriendsOfFriends[j].friends;
 				for (var k = mutualFriends.length - 1; k >= 0; k--) {
-					console.log('Adding friend ' + mutualFriends[k].name + ' to ' + friendId);
 					Meteor.call('addFriend', friendId, mutualFriends[k].uid);
 				};
 			};

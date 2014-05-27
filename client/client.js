@@ -61,7 +61,6 @@ function drawMap() {
 		.attr('height', height);
 
 	Meteor.call('getMembers', function (err, members){
-
 		if (err) console.log(err);
 
 		//generate links from nodes
@@ -79,15 +78,16 @@ function drawMap() {
 			};
 		};
 
+		//initialize force
 		var force = d3.layout.force()
 			.nodes(members)
 			.links(links)
 			.size([width, height])
-			.linkDistance(160)
-			.charge(function (d){
-				sourceLinks = links.filter(function (n) {return n.source.id === d.id});
-				return -1 * (1 - sourceLinks.length/members.length) * 500;
-			})
+			.linkDistance(radius * 2)
+			// .charge(function (d){
+			// 	sourceLinks = links.filter(function (n) {return n.source.id === d.id});
+			// 	return -1 * (1 - sourceLinks.length/members.length) * 500;
+			// })
 			.on("tick", tick)
 			.start();
 
@@ -97,6 +97,33 @@ function drawMap() {
 			.attr("class", "link")
 			.style("stroke-width", 2);
 
+		/*********************** Drag code ******************************/
+	    var node_drag = d3.behavior.drag()
+	        .on("dragstart", dragstart)
+	        .on("drag", dragmove)
+	        .on("dragend", dragend);
+
+	    function dragstart(d, i) {
+	        force.stop() // stops the force auto positioning before you start dragging
+	    }
+
+	    function dragmove(d, i) {
+			node.attr("transform", function (d){
+				return "translate(" + (d3.event.x - d.x) + "," + (d3.event.y - d.y) + ")";
+			})
+	        d.px += d3.event.dx;
+	        d.py += d3.event.dy;
+	        d.x += d3.event.dx;
+	        d.y += d3.event.dy; 
+	        tick(); // this is the key to make it work together with updating both px,py,x,y on d !
+	    }
+
+	    function dragend(d, i) {
+	        // tick();
+	        // force.resume();
+	    }
+	    /*********************** /Drag code ******************************/
+
 		var node = svg.selectAll(".node")
 			.data(force.nodes())
 			.enter()
@@ -105,7 +132,6 @@ function drawMap() {
 			.attr("id", function(member) {
 				return member.id;
 			})
-			.call(force.drag)
 			.on("click", function (d) {
 				d3.event.stopPropagation();
 				Session.set('selected', d.id);
@@ -116,47 +142,10 @@ function drawMap() {
 					.style("stroke", function (o) {
 						return o.source.id === d.id || o.target.id === d.id ? "red" : "";
 					})
-			});
-
-		svg
-			.on("click", function(){
-				Session.set('selected', null);
-				link
-					.style("opacity", 1)
-					.style("stroke", "")
-			});
-
-		node.append("defs")
-			.append("pattern")
-			.attr("id", function(member) {
-				return "i_" + member.id;
 			})
-			.attr('patternUnits', 'userSpaceOnUse')
-			.attr("x", radius)
-			.attr("y", radius)
-			.attr("height", radius * 2)
-			.attr("width", radius * 2)
-			.append("image")
-			.attr("x", 0)
-			.attr("y", 0)
-			.attr("height", radius * 2)
-			.attr("width", radius * 2)
-			.attr('xlink:href', function(member) {
-				return "http://graph.facebook.com/" + member.id + "/picture" + "?type=square" + "&height=" + (radius * 2) + "&width=" + (radius * 2);
-			});
+			.call(force.drag);
 
-		node.append("circle")
-			.style("stroke", "gray")
-			.style("fill", function(member) {
-				return "url(#i_" + member.id + ")";
-			})
-			.attr("r", radius);
-
-		node.append("title")
-			.text(function(member) {
-				return member.name;
-			});
-
+		/*********************** Force Tick code ******************************/
 		function tick() {
 			link
 				.attr("x1", function(d) {
@@ -173,7 +162,7 @@ function drawMap() {
 				});
 
 			node
-				.each(collide(0.15))
+				// .each(collide(0.15))
 				.attr("transform", function(d) {
 					return "translate(" + d.x + "," + d.y + ")";
 				});
@@ -207,6 +196,47 @@ function drawMap() {
 		  };
 		}
 
+		/*********************** /Force Tick code ******************************/
+
+		svg.on("mousedown", function(){
+			// force.start(); //Resume force on SVG click maybe?
+			Session.set('selected', null);
+			link
+				.style("opacity", 1)
+				.style("stroke", "")
+		});
+
+		//Append pictures
+		node.append("defs")
+			.append("pattern")
+			.attr("id", function(member) {
+				return "i_" + member.id;
+			})
+			.attr('patternUnits', 'userSpaceOnUse')
+			.attr("x", radius)
+			.attr("y", radius)
+			.attr("height", radius * 2)
+			.attr("width", radius * 2)
+			.append("image")
+			.attr("x", 0)
+			.attr("y", 0)
+			.attr("height", radius * 2)
+			.attr("width", radius * 2)
+			.attr('xlink:href', function(member) {
+				return "http://graph.facebook.com/" + member.id + "/picture" + "?type=square" + "&height=" + (radius * 2) + "&width=" + (radius * 2);
+			});	
+		node.append("circle")
+			.style("stroke", "gray")
+			.style("fill", function(member) {
+				return "url(#i_" + member.id + ")";
+			})
+			.attr("r", radius);
+
+		//Append titles
+		node.append("title")
+			.text(function(member) {
+				return member.name;
+			});
 	});
 }
 
